@@ -24,7 +24,8 @@ It runs one replica:
 | `apiKey.secretKeyRef.key` | `api-key` |
 | `postgres.host` | none; required |
 | `postgres.port` | `5432` |
-| `postgres.database` | `radarr-main` |
+| `postgres.databases.main` | `radarr-main` |
+| `postgres.databases.log` | `radarr-log` |
 | `postgres.username.secretKeyRef.name` | none; required |
 | `postgres.username.secretKeyRef.key` | `username` |
 | `postgres.password.secretKeyRef.name` | none; required |
@@ -49,15 +50,14 @@ These are set as environment variables, which override `config.xml`, so they can
 | API key | from `apiKey`'s Secret | A fixed key survives `/config` being rebuilt, and anything that talks to Radarr can be given it up front. |
 | Authentication method | `Forms` | A login page with a session. |
 | Authentication required | `Enabled` | Behind a gateway or ingress every request comes from a private address, so `DisabledForLocalAddresses` would turn the login off for everyone. |
-| Postgres | from `postgres` | Radarr's main database. |
-| Log database | off | Radarr's log lines already go to the container's output. |
+| Postgres | from `postgres` | Radarr's main and log databases. |
 
 The login's user and password are made in the web UI on first start.
 Everything else (root folders, quality profiles, indexers, download clients) is kept in the database and set in the web UI.
 
 ### Postgres
 
-Radarr needs one database, `postgres.database`, owned by the user in the Secret; Radarr creates its tables in it.
+Radarr needs two databases, `postgres.databases.main` and `.log`, owned by the user in the Secret; Radarr creates its tables in them.
 The user and password can come from one Secret or two.
 Their keys default to those of a `kubernetes.io/basic-auth` Secret, which is also how CloudNativePG names them.
 

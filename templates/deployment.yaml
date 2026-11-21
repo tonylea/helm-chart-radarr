@@ -48,16 +48,15 @@ spec:
             - name: RADARR__POSTGRES__PORT
               value: {{ .Values.postgres.port | quote }}
             - name: RADARR__POSTGRES__MAINDB
-              value: {{ .Values.postgres.database | quote }}
+              value: {{ .Values.postgres.databases.main | quote }}
+            - name: RADARR__POSTGRES__LOGDB
+              value: {{ .Values.postgres.databases.log | quote }}
             - name: RADARR__POSTGRES__USER
               valueFrom:
                 {{- include "radarr.secretKeyRef" (list "postgres.username" .Values.postgres.username) | nindent 16 }}
             - name: RADARR__POSTGRES__PASSWORD
               valueFrom:
                 {{- include "radarr.secretKeyRef" (list "postgres.password" .Values.postgres.password) | nindent 16 }}
-            # Log lines already go to stdout; a log database would only duplicate them.
-            - name: RADARR__LOG__DBENABLED
-              value: "false"
           ports:
             - name: http
               containerPort: 7878
