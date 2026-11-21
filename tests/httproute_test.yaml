@@ -1,0 +1,37 @@
+suite: HTTPRoute
+release:
+  name: radarr
+templates:
+  - templates/httproute.yaml
+tests:
+  - it: is off by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: routes the hostnames to Radarr's Service
+    set:
+      httpRoute.enabled: true
+      httpRoute.parentRefs:
+        - name: gateway
+          namespace: gateway-system
+      httpRoute.hostnames: [radarr.example.com]
+    asserts:
+      - equal:
+          path: spec
+          value:
+            parentRefs:
+              - name: gateway
+                namespace: gateway-system
+            hostnames: [radarr.example.com]
+            rules:
+              - backendRefs:
+                  - name: radarr
+                    port: 7878
+
+  - it: fails without a parent
+    set:
+      httpRoute.enabled: true
+    asserts:
+      - failedTemplate:
+          errorMessage: httpRoute.parentRefs is required when httpRoute is enabled
