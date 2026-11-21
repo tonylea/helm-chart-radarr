@@ -1,0 +1,19 @@
+suite: Service
+release:
+  name: radarr
+templates:
+  - templates/service.yaml
+tests:
+  - it: exposes Radarr's port to the pod's selector labels
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/name: radarr
+            app.kubernetes.io/instance: radarr
+      - equal:
+          path: spec.ports
+          value:
+            - name: http
+              port: 7878
+              targetPort: http

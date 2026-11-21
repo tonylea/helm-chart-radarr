@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "radarr.labels" . | nindent 4 }}
+spec:
+  # Two copies of Radarr can't share one database, so the old pod stops before the new one starts.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "radarr.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "radarr.podLabels" . | nindent 8 }}
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      # No runAsUser: the image starts as root to chown /config, then drops to PUID and PGID.
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: radarr
+          image: "lscr.io/linuxserver/radarr:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          env:
+            - name: PUID
+              value: {{ .Values.puid | quote }}
+            - name: PGID
+              value: {{ .Values.pgid | quote }}
+            - name: TZ
+              value: {{ .Values.timezone | quote }}
+            - name: RADARR__AUTH__APIKEY
+              valueFrom:
+                {{- include "radarr.secretKeyRef" (list "apiKey" .Values.apiKey) | nindent 16 }}
+            - name: RADARR__AUTH__METHOD
+              value: Forms
+            # Behind a gateway or ingress every request comes from a private address,
+            # so DisabledForLocalAddresses would turn the login off for everyone.
+            - name: RADARR__AUTH__REQUIRED
+              value: Enabled
+            - name: RADARR__POSTGRES__HOST
+              value: {{ required "postgres.host is required" .Values.postgres.host | quote }}
+            - name: RADARR__POSTGRES__PORT
+              value: {{ .Values.postgres.port | quote }}
+            - name: RADARR__POSTGRES__MAINDB
+              value: {{ .Values.postgres.database | quote }}
+            - name: RADARR__POSTGRES__USER
+              valueFrom:
+                {{- include "radarr.secretKeyRef" (list "postgres.username" .Values.postgres.username) | nindent 16 }}
+            - name: RADARR__POSTGRES__PASSWORD
+              valueFrom:
+                {{- include "radarr.secretKeyRef" (list "postgres.password" .Values.postgres.password) | nindent 16 }}
+            # Log lines already go to stdout; a log database would only duplicate them.
+            - name: RADARR__LOG__DBENABLED
+              value: "false"
+          ports:
+            - name: http
+              containerPort: 7878
+          # The first start creates Radarr's schema in Postgres, so start-up gets 5 minutes.
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "radarr.claimName" (list . "config") }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "radarr.claimName" (list . "data") }}
