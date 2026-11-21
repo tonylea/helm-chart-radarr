@@ -2,7 +2,7 @@ apiVersion: v2
 name: radarr
 description: Deploys Radarr, which finds, downloads and organises movies
 type: application
-version: 3.0.0
+version: 3.0.1
 appVersion: "7.0.3.10918-ls328"
 home: https://github.com/tonylea/helm-chart-radarr
 sources:

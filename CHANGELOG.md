@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.0.1](https://github.com/tonylea/helm-chart-radarr/compare/v3.0.0...v3.0.1) (2026-11-21)
+
+### Bug Fixes
+
+* let Radarr's first-run screen set the login ([6ae582e](https://github.com/tonylea/helm-chart-radarr/commit/6ae582e2197afab45da876d1bcae50f5ef862ed4))
+
+### Documentation
+
+* say the kind test is a fresh install ([c348375](https://github.com/tonylea/helm-chart-radarr/commit/c348375cbf0133acf05139a4dc47a144e708e58c))
+
 ## [3.0.0](https://github.com/tonylea/helm-chart-radarr/compare/v2.0.0...v3.0.0) (2026-11-21)
 
 ### ⚠ BREAKING CHANGES
