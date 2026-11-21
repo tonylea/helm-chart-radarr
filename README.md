@@ -1,5 +1,7 @@
 # Radarr Helm Chart
 
+![Downloads](https://img.shields.io/github/downloads/tonylea/helm-chart-radarr/total)
+
 Deploys [Radarr](https://radarr.tv/) from LinuxServer's image, [`lscr.io/linuxserver/radarr`](https://github.com/linuxserver/docker-radarr), the one Radarr's docs recommend.
 
 The chart is opinionated: Radarr keeps its data in Postgres, uses a fixed API key, and always asks for a login.
