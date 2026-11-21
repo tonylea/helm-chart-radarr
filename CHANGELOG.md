@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.0.0](https://github.com/tonylea/helm-chart-radarr/compare/v2.0.0...v3.0.0) (2026-11-21)
+
+### ⚠ BREAKING CHANGES
+
+* persistence.data is now a list of named mounts, each at
+  /data/<name>, with at least one required.
+
+### Features
+
+* mount each data volume at /data/<name> ([0c51172](https://github.com/tonylea/helm-chart-radarr/commit/0c51172db1859eb3de51f09df0c6226b7ceb0907))
+
+### Documentation
+
+* show the chart's download count ([b25bbdb](https://github.com/tonylea/helm-chart-radarr/commit/b25bbdb8aa32d4559fb396624ce705282c8a23bc))
+
 ## [2.0.0](https://github.com/tonylea/helm-chart-radarr/compare/v1.0.0...v2.0.0) (2026-11-21)
 
 ### ⚠ BREAKING CHANGES
